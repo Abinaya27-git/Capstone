@@ -130,3 +130,4 @@ java -cp "out;lib/*" com.abinayamart.Main
 - Rule-based product chatbot (type `chat` in buyer menu)
 - Proper OOP: inheritance (Buyer/Seller/Admin), encapsulation, DAO + Service layers,
   polymorphism (PaymentMethod), exception handling (AbinayaMartException)
+# Capstone
