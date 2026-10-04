@@ -1,0 +1,11 @@
+target/
+out/
+bin/
+lib/*.jar
+!.gitkeep
+.classpath
+.project
+.settings/
+.vscode/
+*.class
+*.log
