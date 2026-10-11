@@ -4,20 +4,41 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * AbinayaMart DB connection helper (JDBC + MySQL).
- * Edit URL / USER / PASSWORD to match your local MySQL setup.
- */
 public class DBConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/abinayamart?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
-    private static final String USER = "root";
-    private static final String PASSWORD = "Abinaya@123";
+
+    private static final String HOST =
+            System.getenv().getOrDefault("DB_HOST", "localhost");
+
+    private static final String PORT =
+            System.getenv().getOrDefault("DB_PORT", "3306");
+
+    private static final String DATABASE =
+            System.getenv().getOrDefault("DB_NAME", "abinayamart");
+
+    private static final String USER =
+            System.getenv().getOrDefault("DB_USER", "root");
+
+    private static final String PASSWORD =
+            System.getenv("DB_PASSWORD");
+
+    private static final boolean USE_SSL =
+            Boolean.parseBoolean(
+                    System.getenv().getOrDefault("DB_SSL", "false")
+            );
+
+    private static final String URL =
+            "jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE
+            + (USE_SSL
+                ? "?sslMode=REQUIRED&serverTimezone=UTC"
+                : "?sslMode=DISABLED&serverTimezone=UTC"
+                  + "&allowPublicKeyRetrieval=true");
 
     static {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            System.err.println("[AbinayaMart] MySQL driver not found. Add mysql-connector-j to lib/ or pom.xml");
+            throw new RuntimeException(
+                    "MySQL JDBC driver not found.", e);
         }
     }
 
@@ -25,6 +46,11 @@ public class DBConnection {
     }
 
     public static Connection getConnection() throws SQLException {
+        if (PASSWORD == null || PASSWORD.isBlank()) {
+            throw new SQLException(
+                    "DB_PASSWORD environment variable is not configured.");
+        }
+
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }
